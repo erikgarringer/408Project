@@ -50,11 +50,16 @@ cmd_docker() {
   echo "✔ Docker Hub authentication successful."
 }
 
+cmd_ssh() {
+  load_env
+  ssh -i "${HOME}/.ssh/${EC2_KEY_NAME}" "ubuntu@${EC2_DEPLOY_HOST}"
+}
+
 cmd_ec2() {
   load_env
   echo "Validating EC2 connection..."
-  chmod 400 "${EC2_KEY_NAME}"
-  ssh -o StrictHostKeyChecking=no -i "${EC2_KEY_NAME}" "ubuntu@${EC2_DEPLOY_HOST}" 'echo "EC2 connection successful."' > /dev/null 2>&1 || {
+  chmod 400 "${HOME}/.ssh/${EC2_KEY_NAME}"
+  ssh -o StrictHostKeyChecking=no -i "${HOME}/.ssh/${EC2_KEY_NAME}" "ubuntu@${EC2_DEPLOY_HOST}" 'echo "EC2 connection successful."' > /dev/null 2>&1 || {
     echo "✘ EC2 connection failed."
     exit 1
   }
@@ -69,9 +74,6 @@ cmd_ec2() {
     echo "EC2_DEPLOY_DIR: ${EC2_DEPLOY_DIR}"
     echo "✔ All required environment variables are set."
   fi
-  echo ssh -i "${EC2_KEY_NAME}" "ubuntu@${EC2_DEPLOY_HOST}" > ec2-ssh.sh
-  chmod +x ec2-ssh.sh
-  echo "Access your EC2 instance using './ec2-ssh.sh'."
 }
 
 cmd_init() {
@@ -85,34 +87,38 @@ cmd_init() {
 }
 
 cmd_up() {
+  load_env
   docker compose up --build
 }
 
 cmd_down() {
+  load_env
   docker compose down
 }
 
 cmd_build() {
+  load_env
   docker compose build --no-cache
 }
 
 cmd_push() {
+  load_env
   docker compose push
 }
 
 cmd_deploy() {
   load_env
   echo "Deploying to EC2 instance at ${EC2_DEPLOY_HOST}..."
-  ssh -i "${EC2_KEY_NAME}" "ubuntu@${EC2_DEPLOY_HOST}" "mkdir -p ${EC2_DEPLOY_DIR}"
-  scp -i "${EC2_KEY_NAME}" docker-compose.yml "ubuntu@${EC2_DEPLOY_HOST}:${EC2_DEPLOY_DIR}/docker-compose.yml"
-  ssh -i "${EC2_KEY_NAME}" "ubuntu@${EC2_DEPLOY_HOST}" "cd ${EC2_DEPLOY_DIR} && docker compose pull && docker compose up -d --remove-orphans"
+  ssh -i "${HOME}/.ssh/${EC2_KEY_NAME}" "ubuntu@${EC2_DEPLOY_HOST}" "mkdir -p ${EC2_DEPLOY_DIR}"
+  scp -i "${HOME}/.ssh/${EC2_KEY_NAME}" docker-compose.yml "ubuntu@${EC2_DEPLOY_HOST}:${EC2_DEPLOY_DIR}/docker-compose.yml"
+  ssh -i "${HOME}/.ssh/${EC2_KEY_NAME}" "ubuntu@${EC2_DEPLOY_HOST}" "cd ${EC2_DEPLOY_DIR} && docker compose pull && docker compose up -d --remove-orphans"
   echo "Deployment complete. Access your application at:"
   echo "http://${EC2_DEPLOY_HOST}"
 }
 
 cmd_logs() {
   load_env
-  ssh -i "${EC2_KEY_NAME}" "ubuntu@${EC2_DEPLOY_HOST}" "cd ${EC2_DEPLOY_DIR} && docker compose logs -f"
+  ssh -i "${HOME}/.ssh/${EC2_KEY_NAME}" "ubuntu@${EC2_DEPLOY_HOST}" "cd ${EC2_DEPLOY_DIR} && docker compose logs -f"
 }
 
 cmd_clean() {
@@ -160,19 +166,28 @@ cmd_nuke() {
 }
 
 cmd_help() {
-  echo "Build script commands:"
+  echo "Configure commands:"
   echo "  env [e]     - Verify and load .env (CI prints info only)"
   echo "  new [n]     - Create a new .env file interactively"
-  echo "  login [l]   - Run both: docker + ec2 checks"
-  echo "  docker [dk] - Authenticate Docker Hub credentials"
-  echo "  ec2 [ec]    - Verify EC2 SSH; writes ec2-ssh.sh"
   echo "  init [i]    - Generate docker-compose.yml from template"
+  echo "  login [l]   - Run both: docker + ec2 checks"
+
+  echo "Development commands:"
   echo "  up [u]      - Build images and start services"
   echo "  down [d]    - Stop services"
   echo "  build [b]   - Build Docker images without cache"
-  echo "  push [p]    - Push Docker images to registry"
-  echo "  deploy [y]  - Upload compose and start services on EC2"
+
+  echo "EC2 commands:"
+  echo "  ssh [s]     - SSH into the EC2 instance"
   echo "  logs [lg]   - Tail service logs on EC2"
+  echo "  ec2 [ec]    - Verify EC2 SSH connectivity and env vars"
+  echo "  deploy [y]  - Upload compose and start services on EC2"
+
+  echo "Docker Hub commands:"
+  echo "  docker [dk] - Authenticate Docker Hub credentials"
+  echo "  push [p]    - Push Docker images to registry"
+
+  echo "Maintenance commands:"
   echo "  clean [c]   - Remove containers, images, volumes; purge local data"
   echo "  nuke [x]    - DESTROY everything: .env, compose, Docker, data"
   echo "  help [h]    - Show this help message"
@@ -298,6 +313,7 @@ main() {
       new|n) cmd_new ;;
       env|e) cmd_env ;;
       login|l) cmd_login ;;
+      ssh|s) cmd_ssh ;;
       init|i) cmd_init ;;
       up|u) cmd_up ;;
       down|d) cmd_down ;;
