@@ -15,6 +15,7 @@ jobs:
   ci:
     uses: ./.github/workflows/ci.yml
   docker:
+    needs: ci
     uses: ./.github/workflows/docker-push.yml
     secrets: inherit
   deploy:
