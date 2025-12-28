@@ -4,6 +4,11 @@
 
 set -o pipefail
 
+# Source fancy output library
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC1091
+source "${SCRIPT_DIR}/lib/fancy.sh"
+
 # Determine if running on GitHub Actions
 GITHUB_ACTIONS_RUN="false"
 if [ -n "${GITHUB_ACTIONS:-}" ]; then
@@ -123,7 +128,21 @@ cmd_logs() {
 
 cmd_web() {
   load_env
-  echo "http://${EC2_DEPLOY_HOST}"
+  local url="http://${EC2_DEPLOY_HOST}"
+  echo "$url"
+}
+
+cmd_open_web() {
+  load_env
+  local url="http://${EC2_DEPLOY_HOST}"
+  echo "Opening $url in browser..."
+  if command -v open &> /dev/null; then
+    open "$url"
+  elif command -v xdg-open &> /dev/null; then
+    xdg-open "$url"
+  else
+    echo "Could not find 'open' or 'xdg-open' command. Please open manually: $url"
+  fi
 }
 
 cmd_clean() {
@@ -171,33 +190,27 @@ cmd_nuke() {
 }
 
 cmd_help() {
-  echo "Configure commands:"
-  echo "  env [e]     - Verify and load .env (CI prints info only)"
-  echo "  new [n]     - Create a new .env file interactively"
-  echo "  init [i]    - Generate docker-compose.yml from template"
-  echo "  login [l]   - Run both: docker + ec2 checks"
+  print_fancy_box "dev.sh — Development & Deployment Helper" 70
+  print_blank
 
-  echo "Development commands:"
-  echo "  up [u]      - Build images and start services"
-  echo "  down [d]    - Stop services"
-  echo "  build [b]   - Build Docker images without cache"
+  print_section "Configure commands"
+  print_commands_columns "env [e]" "new [n]" "init [i]" "login [l]"
+  print_blank
 
-  echo "EC2 commands:"
-  echo "  web [w]     - Print EC2 web address"
-  echo "  ssh [s]     - SSH into the EC2 instance"
-  echo "  logs [lg]   - Tail service logs on EC2"
-  echo "  ec2 [ec]    - Verify EC2 SSH connectivity and env vars"
-  echo "  deploy [y]  - Upload compose and start services on EC2"
+  print_section "Development commands"
+  print_commands_columns "up [u]" "down [d]" "build [b]" "all [a]"
+  print_blank
 
-  echo "Docker Hub commands:"
-  echo "  docker [dk] - Authenticate Docker Hub credentials"
-  echo "  push [p]    - Push Docker images to registry"
+  print_section "EC2 commands"
+  print_commands_columns "web [w]" "open-web [ow]" "ssh [s]" "logs [lg]" "ec2 [ec]" "deploy [y]"
+  print_blank
 
-  echo "Maintenance commands:"
-  echo "  clean [c]   - Remove containers, images, volumes; purge local data"
-  echo "  nuke [x]    - DESTROY everything: .env, compose, Docker, data"
-  echo "  help [h]    - Show this help message"
-  echo "  default     - No args runs 'up'"
+  print_section "Docker Hub commands"
+  print_commands_columns "docker [dk]" "push [p]"
+  print_blank
+
+  print_section "Maintenance commands"
+  print_commands_columns "clean [c]" "nuke [x]" "help [h]" "default"
 }
 
 cmd_new() {
@@ -287,7 +300,7 @@ install_completion() {
 
   local script_dir
   script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-  local completion_path="$script_dir/dev.sh.completion"
+  local completion_path="$script_dir/lib/dev.sh.completion"
 
   # Check if already installed
   if grep -q "source.*dev.sh.completion" "$shell_rc" 2>/dev/null; then
@@ -304,6 +317,13 @@ install_completion() {
 
   echo "✔ Bash completion installed in $shell_rc"
   echo "Run 'source $shell_rc' or restart your shell to enable it."
+}
+
+cmd_all() {
+  echo "Running all steps: build, push, deploy..."
+  cmd_build
+  cmd_push
+  cmd_deploy
 }
 
 # Dispatch
@@ -330,6 +350,8 @@ main() {
       deploy|y) cmd_deploy ;;
       logs|lg) cmd_logs ;;
       web|w) cmd_web ;;
+      open-web|ow) cmd_open_web ;;
+      all|a) cmd_all ;;
       clean|c) cmd_clean ;;
       nuke|x) cmd_nuke ;;
       help|h) cmd_help ;;

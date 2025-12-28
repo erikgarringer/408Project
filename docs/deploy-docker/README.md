@@ -19,9 +19,6 @@ Before you begin, ensure complete the following steps:
 
 ## Step 1: Create an AWS EC2 Instance
 
-Follow these guides to set up your AWS EC2 instance for deploying the Dockerized
-application:
-
 - [Launch an EC2 Instance](EC2launch/README.md)
 - [SSH into your EC2 Instance](EC2ssh/README.md)
 

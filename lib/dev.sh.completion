@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Bash completion for dev.sh
+# Install: Add this to ~/.bashrc or ~/.zshrc:
+#   source /path/to/lib/dev.sh.completion
+
+_dev_sh_completion() {
+  local cur prev opts
+  COMPREPLY=()
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+  # Available commands (long + short aliases)
+  opts="env e new n login l docker dk ec2 ec init i up u down d build b push p deploy y logs lg web w open-web ow ssh s all a clean c nuke x help h"
+
+  # Complete commands
+  COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
+  return 0
+}
+
+# Register the completion function
+complete -F _dev_sh_completion dev.sh
+complete -F _dev_sh_completion ./dev.sh

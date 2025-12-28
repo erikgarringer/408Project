@@ -1,14 +1,8 @@
-# Launching your EC2 Instance
+# Launching your EC2 Instance (ARM64)
 
-- Video Tutorial: [Launching an EC2 Instance]()
-- An AWS EC2 instance running Ubuntu Server 24.04 LTS
-- At least t3.micro instance type (or equivalent)
-- Minimum 1 GB RAM, 8 GB storage, x86_64 architecture
-- Security group allowing inbound traffic on ports 22 (SSH) and 80 (HTTP)
-  - Port 443 (HTTPS) can be added later for secure connections
-- SSH key pair for secure access to the instance
-- Docker installed on the EC2 instance
-  - EC2 Configuration Script: [`config-ec2.sh`](https://gist.github.com/shanep/2e84ca1837019b407cb1095e8a4c5ed3)
+These instructions are for launching an AWS EC2 instance if you have an Apple
+Silicon based Mac (M1/M2) (arm64 architecture). IF you have an Intel/AMD based
+machine, please follow the [AMD64 instructions](amd64.md).
 
 ## Open the Amazon EC2 console.
 
@@ -18,17 +12,8 @@ Go to [https://console.aws.amazon.com/ec2/](https://console.aws.amazon.com/ec2/)
 
 ## **Application and OS Images (Amazon Machine Image)**
 
-* **Name and tags**: classname-yourname-ec2
-* **Amazon Machine Image (AMI)**: Ubuntu
-* **Instance type**: t3.micro
-
-![](image02.png)
-
-## Instance type
-
-* **Instance type**: t3.micro
-
-![](image03.png)
+- [Apple Silicon based Mac (M1/M2) (arm64 architecture) Instructions](arm64.md)
+- [Intel/AMD based Machine (amd64/x86 architecture) Instructions](amd64.md)
 
 ## Key pair (login)
 
