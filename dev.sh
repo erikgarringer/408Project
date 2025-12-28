@@ -194,23 +194,38 @@ cmd_help() {
   print_blank
 
   print_section "Configure commands"
-  print_commands_columns "env [e]" "new [n]" "init [i]" "login [l]"
+  print_command "[e ] env" "Verify and load .env (CI prints info only)"
+  print_command "[n ] new" "Create a new .env file interactively"
+  print_command "[i ] init" "Generate docker-compose.yml from template"
+  print_command "[l ] login" "Run docker + EC2 checks"
   print_blank
 
   print_section "Development commands"
-  print_commands_columns "up [u]" "down [d]" "build [b]" "all [a]"
+  print_command "[u ] up" "Build images and start services"
+  print_command "[dn] down" "Stop services"
+  print_command "[b ] build" "Build Docker images without cache"
+  print_command "[a ] all" "Build, push, deploy in sequence"
   print_blank
 
   print_section "EC2 commands"
-  print_commands_columns "web [w]" "open-web [ow]" "ssh [s]" "logs [lg]" "ec2 [ec]" "deploy [y]"
+  print_command "[w ] web" "Print EC2 web address"
+  print_command "[ow] open-web" "Open EC2 application in browser"
+  print_command "[s ] ssh" "SSH into the EC2 instance"
+  print_command "[lg] logs" "Tail service logs on EC2"
+  print_command "[ec] ec2" "Verify EC2 SSH connectivity and env vars"
+  print_command "[y ] deploy" "Upload compose and start services on EC2"
   print_blank
 
   print_section "Docker Hub commands"
-  print_commands_columns "docker [dk]" "push [p]"
+  print_command "[dk] docker" "Authenticate Docker Hub credentials"
+  print_command "[p ] push" "Push Docker images to registry"
   print_blank
 
   print_section "Maintenance commands"
-  print_commands_columns "clean [c]" "nuke [x]" "help [h]" "default"
+  print_command "[c ] clean" "Remove containers, images, volumes; purge local data"
+  print_command "[x ] nuke" "Destroy .env, compose, Docker resources, data"
+  print_command "[h ] help" "Show this help message"
+  print_command "default" "No args runs 'up'"
 }
 
 cmd_new() {
@@ -342,7 +357,7 @@ main() {
       ssh|s) cmd_ssh ;;
       init|i) cmd_init ;;
       up|u) cmd_up ;;
-      down|d) cmd_down ;;
+      down|dn) cmd_down ;;
       build|b) cmd_build ;;
       push|p) cmd_push ;;
       docker|dk) cmd_docker ;;

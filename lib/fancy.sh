@@ -48,7 +48,8 @@ print_section() {
 print_command() {
   local cmd="$1"
   local desc="$2"
-  printf "  ${BOLD}%s${RESET}  - %s\n" "$cmd" "$desc"
+  # Pad command label so all hyphens align
+  printf "  ${BOLD}%-18s${RESET} - %s\n" "$cmd" "$desc"
 }
 
 # Print commands in two columns (just commands, no descriptions)
@@ -74,6 +75,54 @@ print_commands_columns() {
   if [ $((i % 2)) -ne 0 ]; then
     printf "%b\n" "$line"
   fi
+}
+
+# Print commands in a single column (no descriptions)
+print_commands_list() {
+  local -a commands=("$@")
+  for cmd in "${commands[@]}"; do
+    printf "  ${BOLD}%s${RESET}\n" "$cmd"
+  done
+}
+
+# Print command descriptions in two aligned columns (cmd/desc pairs)
+print_command_desc_columns() {
+  local -a items=("$@")
+
+  # Determine max command label width (character count, not bytes)
+  local max_cmd_len=0
+  local idx=0
+  while [ $idx -lt ${#items[@]} ]; do
+    local cmd="${items[$idx]}"
+    local cmd_len
+    cmd_len=$(printf "%s" "$cmd" | wc -m | tr -d ' ')
+    if [ "$cmd_len" -gt "$max_cmd_len" ]; then
+      max_cmd_len=$cmd_len
+    fi
+    idx=$((idx+2))
+  done
+
+  # Add a little padding so the hyphen lines up nicely
+  local col_width=$((max_cmd_len + 2))
+  local desc_width=60
+
+  idx=0
+  while [ $idx -lt ${#items[@]} ]; do
+    local cmd1="${items[$idx]}"
+    local desc1="${items[$((idx+1))]:-}"
+    local cmd2="${items[$((idx+2))]:-}"
+    local desc2="${items[$((idx+3))]:-}"
+
+    if [ -n "$cmd2" ]; then
+      printf "  ${BOLD}%-*s${RESET} - %-*.*s  ${BOLD}%-*s${RESET} - %s\n" \
+        "$col_width" "$cmd1" "$desc_width" "$desc_width" "$desc1" \
+        "$col_width" "$cmd2" "$desc2"
+      idx=$((idx+4))
+    else
+      printf "  ${BOLD}%-*s${RESET} - %s\n" "$col_width" "$cmd1" "$desc1"
+      idx=$((idx+2))
+    fi
+  done
 }
 
 # Print a blank line
