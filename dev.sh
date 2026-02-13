@@ -242,8 +242,8 @@ cmd_new() {
     read -r docker_pat
     DOCKER_PAT=$docker_pat
   else
-    DOCKER_USERNAME="changeme"
-    DOCKER_PAT="changeme"
+    DOCKER_USERNAME="none"
+    DOCKER_PAT="none"
   fi
   echo "Are you deploying to an AWS EC2 instance? (y/n  default: n)"
   read -r has_ec2
@@ -264,8 +264,8 @@ cmd_new() {
         chmod 600 "$HOME/.ssh/${EC2_KEY_NAME}"
   fi
   else
-      EC2_DEPLOY_HOST="changeme"
-      EC2_KEY_NAME="changeme.pem"
+      EC2_DEPLOY_HOST="localhost"
+      EC2_KEY_NAME="none"
   fi
 
   EC2_DEPLOY_DIR="/home/ubuntu/${APP_NAME}"
@@ -283,15 +283,6 @@ cmd_new() {
   load_env
   cmd_init
   echo "New dev environment setup complete."
-
-  # Auto-install bash completion
-  echo ""
-  echo "Would you like to enable bash completion for dev.sh? (y/n  default: n)"
-  read -r enable_completion
-  if [ "$enable_completion" != "n" ] && [ "$enable_completion" != "N" ]; then
-    install_completion
-  fi
-
   echo "Run './dev.sh build install' to build and install the application."
 }
 
