@@ -1,0 +1,29 @@
+{
+  "name": "408project",
+  "version": "1.0.0",
+  "description": "This is a starter template for a full stack web application built with Node.js, Express, and SQLite. It is fully containerized using Docker, making it easy to deploy to various environments, including AWS EC2 instances.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib"
+  },
+  "scripts": {
+      "test": "npx playwright test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erikgarringer/408Project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/erikgarringer/408Project/issues"
+  },
+  "homepage": "https://github.com/erikgarringer/408Project#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.2.3"
+  }
+}

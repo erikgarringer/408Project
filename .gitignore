@@ -121,3 +121,9 @@ playwright-report/
 instance_id.txt
 ec2-ssh.sh
 docker-compose.yml
+
+# Playwright
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
