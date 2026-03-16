@@ -1,8 +1,8 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-/* GET home (landing) page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Full Stack Starter Code' });
+router.get('/', (req, res) => {
+  res.render('index', { title: 'LiftLog' });
 });
+
 module.exports = router;

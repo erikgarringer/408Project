@@ -1,14 +1,68 @@
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-10">
-      <div class="text-center mb-5">
-        <h1 class="display-4 text-white mb-3"><%= title %></h1>
-        <p class="text-white-50">GitHub Repository: <a href="https://github.com/shanep/fullstack-starter">https://github.com/shanep/fullstack-starter</a></p>
-        <img src="/images/dependency_2x.png" alt="Fullstack Dependency" class="img-fluid my-4" style="max-width: 200px;">
-        <ul class="list-unstyled text-white-50 mb-4">
-          <li><a href="/lab0.html" class="btn btn-secondary mt-3">Go to Lab 0 Page</a></li>
-        </ul>
+<!-- Hero -->
+<div class="p-5 mb-4 bg-dark text-white rounded-3">
+  <div class="container-fluid py-2">
+    <h1 class="display-5 fw-bold">
+      <i class="bi bi-lightning-charge-fill text-warning me-2"></i>LiftLog
+    </h1>
+    <p class="col-md-8 fs-5 text-secondary">
+      Track your lifts. Catch your PRs. Own your data.
+    </p>
+    <a href="/workouts/log" class="btn btn-warning btn-lg fw-semibold">
+      <i class="bi bi-plus-circle me-2"></i>Log a Workout
+    </a>
+  </div>
+</div>
+
+<!-- Summary dashboard placeholder -->
+<div class="row g-4 mb-5">
+  <div class="col-sm-4">
+    <div class="card text-center shadow-sm h-100">
+      <div class="card-body">
+        <i class="bi bi-journal-check display-4 text-primary"></i>
+        <h5 class="card-title mt-2">Total Workouts</h5>
+        <p class="display-6 fw-bold text-primary">—</p>
+        <p class="text-muted small">Coming in CP6</p>
       </div>
     </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="card text-center shadow-sm h-100">
+      <div class="card-body">
+        <i class="bi bi-calendar-event display-4 text-success"></i>
+        <h5 class="card-title mt-2">Last Workout</h5>
+        <p class="display-6 fw-bold text-success">—</p>
+        <p class="text-muted small">Coming in CP6</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="card text-center shadow-sm h-100">
+      <div class="card-body">
+        <i class="bi bi-trophy-fill display-4 text-warning"></i>
+        <h5 class="card-title mt-2">PRs This Month</h5>
+        <p class="display-6 fw-bold text-warning">—</p>
+        <p class="text-muted small">Coming in CP6</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick links -->
+<h4 class="mb-3">Quick Links</h4>
+<div class="row g-3">
+  <div class="col-md-4">
+    <a href="/workouts/log" class="btn btn-outline-primary w-100 py-3">
+      <i class="bi bi-plus-circle me-2"></i>Log a Workout
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a href="/workouts" class="btn btn-outline-secondary w-100 py-3">
+      <i class="bi bi-clock-history me-2"></i>View History
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a href="/workouts/progress" class="btn btn-outline-success w-100 py-3">
+      <i class="bi bi-graph-up-arrow me-2"></i>Track Progress
+    </a>
   </div>
 </div>
