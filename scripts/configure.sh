@@ -40,11 +40,11 @@ else
   info ".env written with PORT=${USER_PORT}"
 fi
 
-# ── 3. Database init ──────────────────────────────────────────────────────────
-section "Initializing database"
-mkdir -p db
-node db/init-db.js
-info "Schema applied"
+# # ── 3. Database init ──────────────────────────────────────────────────────────
+# section "Initializing database"
+# mkdir -p db
+# node db/init-db.js
+# info "Schema applied"
 
 # ── 4. Seed sample data ───────────────────────────────────────────────────────
 section "Seeding sample data"
