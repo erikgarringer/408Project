@@ -54,7 +54,7 @@ fi
 # ── 5. Start with PM2 ────────────────────────────────────────────────────────
 section "Starting app with PM2"
 pm2 delete liftlog 2>/dev/null || true
-pm2 start app.js --name liftlog
+pm2 start app/src/bin/www --name liftlog
 pm2 save
 info "App started and PM2 process list saved"
 
