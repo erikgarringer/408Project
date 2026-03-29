@@ -40,15 +40,16 @@ else
   info ".env written with PORT=${USER_PORT}"
 fi
 
+# Changed how init is handled. 
 # # ── 3. Database init ──────────────────────────────────────────────────────────
 # section "Initializing database"
 # mkdir -p db
 # node db/init-db.js
 # info "Schema applied"
 
-# ── 4. Seed sample data ───────────────────────────────────────────────────────
-section "Seeding sample data"
-node db/seed.js
+# # ── 4. Seed sample data ───────────────────────────────────────────────────────
+# section "Seeding sample data"
+# node db/seed.js
 
 # ── 5. Start with PM2 ────────────────────────────────────────────────────────
 section "Starting app with PM2"
