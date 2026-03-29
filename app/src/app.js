@@ -19,6 +19,7 @@ if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
 const databaseManager = db.createDatabaseManager(dbPath);
+databaseManager.dbHelpers.seedSampleData(); 
 
 // View engine setup
 app.set('views', path.join(__dirname, 'views'));
