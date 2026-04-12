@@ -1,9 +1,23 @@
 const express = require('express');
 const router = express.Router();
 
-// GET /workouts — history page
+// GET /workouts — history page with pagination
 router.get('/', (req, res) => {
-  res.render('history', { title: 'Workout History' });
+  const db = req.db;
+  const page = parseInt(req.query.page, 10) || 1;
+  const perPage = 10;
+
+  const workouts = db.getAllWorkouts({ page, perPage });
+  const totalCount = db.getWorkoutCount();
+  const totalPages = Math.ceil(totalCount / perPage);
+
+  res.render('history', {
+    title: 'Workout History',
+    workouts,
+    page,
+    totalPages,
+    totalCount
+  });
 });
 
 // GET /workouts/log — log a workout form
@@ -21,7 +35,6 @@ router.post('/', (req, res) => {
   const db = req.db;
   const { workout_date, name, notes, exercise_name, sets, reps, weight_lbs } = req.body;
 
-  // Basic validation
   if (!workout_date || !name) {
     return res.status(400).render('log', {
       title: 'Log a Workout',
@@ -29,16 +42,13 @@ router.post('/', (req, res) => {
     });
   }
 
-  // Create the workout row
   const workoutId = db.createWorkout(workout_date, name, notes || null);
 
-  // exercise_name etc. come in as arrays when there are multiple rows
   const names = Array.isArray(exercise_name) ? exercise_name : [exercise_name];
   const setsArr = Array.isArray(sets) ? sets : [sets];
   const repsArr = Array.isArray(reps) ? reps : [reps];
   const weightsArr = Array.isArray(weight_lbs) ? weight_lbs : [weight_lbs];
 
-  // Insert each exercise set
   names.forEach((exName, idx) => {
     if (!exName || !setsArr[idx] || !repsArr[idx] || !weightsArr[idx]) return;
     db.createExerciseSet(
@@ -54,13 +64,15 @@ router.post('/', (req, res) => {
   res.redirect('/workouts');
 });
 
-// GET /workouts/:id — workout detail page
+// GET /workouts/:id — workout detail page (CP5)
 router.get('/:id', (req, res) => {
   res.render('detail', { title: 'Workout Detail', id: req.params.id });
 });
 
-// DELETE /workouts/:id — delete a workout (wired in CP4)
+// DELETE /workouts/:id — delete workout, cascade handled by FK
 router.delete('/:id', (req, res) => {
+  const db = req.db;
+  db.deleteWorkout(req.params.id);
   res.redirect('/workouts');
 });
 

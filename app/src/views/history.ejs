@@ -2,18 +2,104 @@
   <i class="bi bi-clock-history display-5 text-secondary me-3"></i>
   <div>
     <h1 class="mb-0">Workout History</h1>
-    <p class="text-muted mb-0">All logged sessions, newest first</p>
+    <p class="text-muted mb-0">
+      <%= totalCount %> workout<%= totalCount !== 1 ? 's' : '' %> logged
+    </p>
   </div>
 </div>
 
-<!-- placeholder -->
-<div class="card shadow-sm">
-  <div class="card-body text-center py-5 text-muted">
-    <i class="bi bi-tools display-1 mb-3"></i>
-    <h4>Workout cards coming in Checkpoint 4</h4>
-    <p class="mb-0">
-      This page will list all workouts in reverse-chronological order
-      with delete buttons and pagination (10 per page).
-    </p>
+<% if (workouts.length === 0) { %>
+  <div class="card shadow-sm">
+    <div class="card-body text-center py-5 text-muted">
+      <i class="bi bi-journal-x display-1 mb-3"></i>
+      <h4>No workouts yet</h4>
+      <p class="mb-3">Get started by logging your first session.</p>
+      <a href="/workouts/log" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-2"></i>Log a Workout
+      </a>
+    </div>
   </div>
+
+<% } else { %>
+
+  <% workouts.forEach(workout => { %>
+    <div class="card shadow-sm mb-3 workout-card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <!-- Workout info -->
+          <div>
+            <h5 class="card-title mb-1">
+              <a href="/workouts/<%= workout.id %>" class="text-decoration-none text-dark">
+                <%= workout.name %>
+              </a>
+            </h5>
+            <p class="text-muted small mb-1">
+              <i class="bi bi-calendar3 me-1"></i><%= workout.workout_date %>
+            </p>
+            <% if (workout.notes) { %>
+              <p class="text-muted small mb-0">
+                <i class="bi bi-chat-left-text me-1"></i><%= workout.notes %>
+              </p>
+            <% } %>
+          </div>
+
+          <!-- Action buttons -->
+          <div class="d-flex gap-2 ms-3">
+            <a href="/workouts/<%= workout.id %>" class="btn btn-sm btn-outline-primary">
+              <i class="bi bi-eye me-1"></i>View
+            </a>
+
+            <!-- Delete form using method-override -->
+            <form action="/workouts/<%= workout.id %>?_method=DELETE" method="POST"
+              onsubmit="return confirm('Delete this workout? This cannot be undone.')">
+              <button type="submit" class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-trash me-1"></i>Delete
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+
+  <!-- Pagination -->
+  <% if (totalPages > 1) { %>
+    <nav aria-label="Workout history pagination" class="mt-4">
+      <ul class="pagination justify-content-center">
+
+        <!-- Previous -->
+        <li class="page-item <%= page <= 1 ? 'disabled' : '' %>">
+          <a class="page-link" href="/workouts?page=<%= page - 1 %>">
+            <i class="bi bi-chevron-left"></i> Prev
+          </a>
+        </li>
+
+        <!-- Page numbers -->
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <li class="page-item <%= i === page ? 'active' : '' %>">
+            <a class="page-link" href="/workouts?page=<%= i %>"><%= i %></a>
+          </li>
+        <% } %>
+
+        <!-- Next -->
+        <li class="page-item <%= page >= totalPages ? 'disabled' : '' %>">
+          <a class="page-link" href="/workouts?page=<%= page + 1 %>">
+            Next <i class="bi bi-chevron-right"></i>
+          </a>
+        </li>
+
+      </ul>
+    </nav>
+    <p class="text-center text-muted small">
+      Page <%= page %> of <%= totalPages %>
+    </p>
+  <% } %>
+
+<% } %>
+
+<!-- Log another workout button -->
+<div class="mt-4">
+  <a href="/workouts/log" class="btn btn-primary">
+    <i class="bi bi-plus-circle me-2"></i>Log a Workout
+  </a>
 </div>
