@@ -6,14 +6,110 @@
   </div>
 </div>
 
-<!-- Placeholder  -->
-<div class="card shadow-sm">
-  <div class="card-body text-center py-5 text-muted">
-    <i class="bi bi-tools display-1 mb-3"></i>
-    <h4>Progress filter &amp; table coming in Checkpoint 5</h4>
-    <p class="mb-0">
-      This page will let you pick an exercise from a dropdown and see every
-      logged set, your all-time PR, and estimated 1RM per set.
-    </p>
+<!-- Exercise filter form -->
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <form method="GET" action="/workouts/progress" class="row g-3 align-items-end">
+      <div class="col-md-8">
+        <label for="exercise" class="form-label fw-semibold">Select Exercise</label>
+        <select class="form-select" id="exercise" name="exercise" onchange="this.form.submit()">
+          <option value="">-- Choose an exercise --</option>
+          <% exerciseNames.forEach(name => { %>
+            <option value="<%= name %>" <%= selectedExercise === name ? 'selected' : '' %>>
+              <%= name %>
+            </option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <button type="submit" class="btn btn-success w-100">
+          <i class="bi bi-funnel me-2"></i>View Progress
+        </button>
+      </div>
+    </form>
   </div>
 </div>
+
+<% if (!selectedExercise) { %>
+  <!-- No exercise selected yet -->
+  <div class="card shadow-sm">
+    <div class="card-body text-center py-5 text-muted">
+      <i class="bi bi-bar-chart-line display-1 mb-3"></i>
+      <h4>Select an exercise above</h4>
+      <p class="mb-0">Your logged sets and all-time PR will appear here.</p>
+    </div>
+  </div>
+
+<% } else if (sets.length === 0) { %>
+  <!-- Exercise selected but no data -->
+  <div class="card shadow-sm">
+    <div class="card-body text-center py-5 text-muted">
+      <i class="bi bi-journal-x display-1 mb-3"></i>
+      <h4>No sets found for "<%= selectedExercise %>"</h4>
+    </div>
+  </div>
+
+<% } else { %>
+
+  <!-- PR banner -->
+  <% if (pr) { %>
+    <div class="alert alert-warning d-flex align-items-center mb-4">
+      <i class="bi bi-trophy-fill fs-4 me-3 text-warning"></i>
+      <div>
+        <strong>All-Time PR for <%= selectedExercise %></strong><br />
+        <span>
+          <%= pr.weight_lbs %> lbs &times; <%= pr.reps %> reps
+          &mdash; Est. 1RM: <strong><%= pr.estimated_1rm %> lbs</strong>
+          &mdash; <span class="text-muted"><%= pr.workout_date %></span>
+        </span>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- Sets table -->
+  <div class="card shadow-sm">
+    <div class="card-header fw-semibold">
+      <i class="bi bi-table me-2"></i>All Sets — <%= selectedExercise %>
+      <span class="badge bg-secondary ms-2"><%= sets.length %> entries</span>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Date</th>
+            <th>Workout</th>
+            <th class="text-center">Sets</th>
+            <th class="text-center">Reps</th>
+            <th class="text-center">Weight (lbs)</th>
+            <th class="text-center">Est. 1RM</th>
+            <th class="text-center">PR</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% sets.forEach(set => { %>
+            <tr>
+              <td><%= set.workout_date %></td>
+              <td>
+                <a href="/workouts/<%= set.workout_id %>" class="text-decoration-none">
+                  <%= set.workout_name %>
+                </a>
+              </td>
+              <td class="text-center"><%= set.sets %></td>
+              <td class="text-center"><%= set.reps %></td>
+              <td class="text-center"><%= set.weight_lbs %></td>
+              <td class="text-center text-muted"><%= set.estimated_1rm %> lbs</td>
+              <td class="text-center">
+                <% if (set.is_pr) { %>
+                  <span class="badge badge-pr">
+                    <i class="bi bi-trophy-fill me-1"></i>PR
+                  </span>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+<% } %>

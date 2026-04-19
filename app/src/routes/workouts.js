@@ -27,7 +27,25 @@ router.get('/log', (req, res) => {
 
 // GET /workouts/progress — exercise progress page
 router.get('/progress', (req, res) => {
-  res.render('progress', { title: 'Exercise Progress' });
+  const db = req.db;
+  const exerciseNames = db.getExerciseNames();
+  const selectedExercise = req.query.exercise || null;
+
+  let sets = [];
+  let pr = null;
+
+  if (selectedExercise) {
+    sets = db.getSetsForExercise(selectedExercise);
+    pr = db.getPrForExercise(selectedExercise);
+  }
+
+  res.render('progress', {
+    title: 'Exercise Progress',
+    exerciseNames,
+    selectedExercise,
+    sets,
+    pr
+  });
 });
 
 // POST /workouts — save a new workout and its exercise sets
@@ -64,9 +82,26 @@ router.post('/', (req, res) => {
   res.redirect('/workouts');
 });
 
-// GET /workouts/:id — workout detail page (CP5)
+// GET /workouts/:id — workout detail page
 router.get('/:id', (req, res) => {
-  res.render('detail', { title: 'Workout Detail', id: req.params.id });
+  const db = req.db;
+  const workout = db.getWorkoutById(req.params.id);
+
+  if (!workout) {
+    return res.status(404).render('detail', {
+      title: 'Workout Not Found',
+      workout: null,
+      sets: []
+    });
+  }
+
+  const sets = db.getSetsForWorkout(workout.id);
+
+  res.render('detail', {
+    title: workout.name,
+    workout,
+    sets
+  });
 });
 
 // DELETE /workouts/:id — delete workout, cascade handled by FK
