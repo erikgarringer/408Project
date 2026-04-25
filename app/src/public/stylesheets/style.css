@@ -1,45 +1,105 @@
+
+:root {
+  --ll-accent: #f5a623;
+  --ll-dark: #1a1a2e;
+}
+
 body {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
-  padding: 20px 0;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-color: #f8f9fa;
 }
 
-a {
-  color: #00B7FF;
+/* Navbar  */
+.navbar-brand {
+  font-size: 1.4rem;
+  letter-spacing: 0.5px;
 }
 
+.navbar-nav .nav-link {
+  font-size: 0.95rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.15s ease;
+}
+
+.navbar-nav .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/*Hero section  */
+.rounded-3.bg-dark {
+  background: linear-gradient(135deg, var(--ll-dark) 0%, #16213e 100%) !important;
+  border: none;
+}
+
+/*Cards */
 .card {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 0.6rem;
 }
 
-.card-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+.workout-card {
+  transition: box-shadow 0.15s ease-in-out, transform 0.15s ease-in-out;
 }
 
-.todo-item {
-  border-bottom: 1px solid #e9ecef;
-  padding: 12px 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.workout-card:hover {
+  box-shadow: 0 0.5rem 1.2rem rgba(0, 0, 0, 0.12) !important;
+  transform: translateY(-2px);
 }
 
-.todo-item:last-child {
+/* ── PR badge  */
+.badge-pr {
+  background-color: var(--ll-accent);
+  color: #000;
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 0.35em 0.65em;
+  border-radius: 0.375rem;
+}
+
+/* ── Tables */
+.table th {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6c757d;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+/* ── Exercise rows on log form */
+.exercise-row {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.exercise-row:last-child {
   border-bottom: none;
 }
 
-.badge-completed {
-  background-color: #28a745;
+/* ── Buttons  */
+.btn {
+  border-radius: 0.4rem;
 }
 
-.badge-pending {
-  background-color: #ffc107;
-  color: #333;
+/* ── Footer  */
+footer {
+  border-top: 1px solid #2c2c2c;
 }
 
-.btn-delete {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
+/* ── Responsive tweaks  */
+@media (max-width: 576px) {
+  .display-6 {
+    font-size: 1.6rem;
+  }
+
+  .workout-card .d-flex {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .workout-card .d-flex .d-flex {
+    flex-direction: row;
+  }
 }

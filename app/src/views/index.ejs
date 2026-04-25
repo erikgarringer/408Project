@@ -13,15 +13,14 @@
   </div>
 </div>
 
-<!-- Summary dashboard placeholder -->
+<!-- Summary dashboard -->
 <div class="row g-4 mb-5">
   <div class="col-sm-4">
     <div class="card text-center shadow-sm h-100">
       <div class="card-body">
         <i class="bi bi-journal-check display-4 text-primary"></i>
         <h5 class="card-title mt-2">Total Workouts</h5>
-        <p class="display-6 fw-bold text-primary">—</p>
-        <p class="text-muted small">Coming in CP6</p>
+        <p class="display-6 fw-bold text-primary"><%= totalWorkouts %></p>
       </div>
     </div>
   </div>
@@ -30,8 +29,9 @@
       <div class="card-body">
         <i class="bi bi-calendar-event display-4 text-success"></i>
         <h5 class="card-title mt-2">Last Workout</h5>
-        <p class="display-6 fw-bold text-success">—</p>
-        <p class="text-muted small">Coming in CP6</p>
+        <p class="display-6 fw-bold text-success">
+          <%= lastWorkoutDate || 'None yet' %>
+        </p>
       </div>
     </div>
   </div>
@@ -40,8 +40,7 @@
       <div class="card-body">
         <i class="bi bi-trophy-fill display-4 text-warning"></i>
         <h5 class="card-title mt-2">PRs This Month</h5>
-        <p class="display-6 fw-bold text-warning">—</p>
-        <p class="text-muted small">Coming in CP6</p>
+        <p class="display-6 fw-bold text-warning"><%= prCountThisMonth %></p>
       </div>
     </div>
   </div>
