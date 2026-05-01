@@ -23,8 +23,8 @@ test.describe('Landing Page', () => {
   test('should have working navigation links', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByRole('link', { name: /Log Workout/i }).first()).toBeVisible();
-    await expect(page.getByRole('link', { name: /History/i })).toBeVisible();
-    await expect(page.getByRole('link', { name: /Progress/i })).toBeVisible();
+    await expect(page.locator('nav').getByRole('link', { name: /History/i })).toBeVisible();
+    await expect(page.locator('nav').getByRole('link', { name: /Progress/i })).toBeVisible();
   });
 
 });
@@ -73,7 +73,7 @@ test.describe('Log Workout', () => {
     await page.getByRole('button', { name: /Save Workout/i }).click();
 
     await expect(page).toHaveURL('/workouts');
-    await expect(page.getByText('Playwright Test Workout')).toBeVisible();
+    await expect(page.getByText('Playwright Test Workout').first()).toBeVisible();
   });
 
 });
@@ -103,16 +103,19 @@ test.describe('Workout History', () => {
     await page.getByRole('button', { name: /Save Workout/i }).click();
 
     await expect(page).toHaveURL('/workouts');
-    await expect(page.getByText('Workout To Delete')).toBeVisible();
+    await expect(page.getByText('Workout To Delete').first()).toBeVisible();
 
-    // Accept the confirm dialog and click delete
+    // Accept the confirm dialog and click delete on the first card
+    const countBefore = await page.locator('.workout-card').filter({ hasText: 'Workout To Delete' }).count();
+
     page.on('dialog', dialog => dialog.accept());
-    await page.locator('form').filter({ hasText: 'Delete' })
-      .filter({ has: page.getByText('Workout To Delete') })
-      .getByRole('button', { name: /Delete/i })
+    await page.locator('.workout-card').filter({ hasText: 'Workout To Delete' }).first()
+      .getByRole('button', { name: /Delete/i }).first()
       .click();
 
-    await expect(page.getByText('Workout To Delete')).not.toBeVisible();
+    await page.waitForURL('/workouts');
+    const countAfter = await page.locator('.workout-card').filter({ hasText: 'Workout To Delete' }).count();
+    expect(countAfter).toBe(countBefore - 1);
   });
 
 });
@@ -167,8 +170,8 @@ test.describe('Exercise Progress', () => {
     const firstExercise = await page.locator('#exercise option').nth(1).textContent() ?? '';
     await page.locator('#exercise').selectOption({ index: 1 });
 
-    // The table should now show rows matching the selected exercise
-    await expect(page.getByText(firstExercise.trim())).toBeVisible();
+    // The table header should show the selected exercise name
+    await expect(page.locator('.card-header').filter({ hasText: firstExercise.trim() })).toBeVisible();
   });
 
   test('should show PR banner when an exercise has a PR', async ({ page }) => {
