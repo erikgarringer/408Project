@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
-# LiftLog — System setup for a fresh Ubuntu 24.04 EC2 instance
-# Run once as ubuntu (sudo privileges required)
-# Usage: bash install.sh
+# install.sh — LiftLog EC2 setup
+# Usage: bash scripts/install.sh
 
 set -euo pipefail
 
-# Text formatting
 BOLD="\e[1m"
 GREEN="\e[32m"
 YELLOW="\e[33m"
@@ -15,70 +13,33 @@ info()    { echo -e "${GREEN}[install]${RESET} $*"; }
 warn()    { echo -e "${YELLOW}[install]${RESET} $*"; }
 section() { echo -e "\n${BOLD}=== $* ===${RESET}"; }
 
-# ── 1. System packages ───────────────────────────────────────────────────────
 section "Updating system packages"
 sudo apt-get update -y
 sudo apt-get upgrade -y
 sudo apt-get install -y curl git sqlite3 build-essential
 
-# ── 2. Node.js 20 via NodeSource ─────────────────────────────────────────────
-section "Installing Node.js 20"
-if command -v node &>/dev/null && [[ "$(node -v)" == v20* ]]; then
-  info "Node.js 20 already installed — skipping"
+section "Installing Docker"
+if command -v docker &>/dev/null; then
+  info "Docker already installed — skipping"
 else
-  curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-  sudo apt-get install -y nodejs
+  curl -fsSL https://get.docker.com | sudo sh
+  sudo usermod -aG docker ubuntu
+  info "Docker installed"
 fi
-info "Node $(node -v) / npm $(npm -v)"
+info "Docker $(docker --version)"
 
-# ── 3. PM2 ───────────────────────────────────────────────────────────────────
-section "Installing PM2"
-if command -v pm2 &>/dev/null; then
-  info "PM2 already installed — skipping"
+section "Configuring swap"
+if [ ! -f /swapfile ]; then
+  sudo fallocate -l 1G /swapfile
+  sudo chmod 600 /swapfile
+  sudo mkswap /swapfile
+  sudo swapon /swapfile
+  echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+  info "1GB swap created and enabled"
 else
-  sudo npm install -g pm2
+  sudo swapon /swapfile 2>/dev/null || true
+  info "Swap already configured — re-enabled"
 fi
 
-# Configure PM2 to start on boot
-PM2_STARTUP=$(pm2 startup systemd -u ubuntu --hp /home/ubuntu 2>&1 | tail -1)
-if [[ "$PM2_STARTUP" == sudo* ]]; then
-  eval "$PM2_STARTUP"
-fi
-info "PM2 startup configured"
-
-# ── 4. nginx ─────────────────────────────────────────────────────────────────
-section "Installing and configuring nginx"
-sudo apt-get install -y nginx
-
-# Write reverse proxy config
-sudo tee /etc/nginx/sites-available/liftlog > /dev/null <<'NGINX'
-server {
-    listen 80;
-    server_name _;
-
-    # Proxy all traffic to the Express app
-    location / {
-        proxy_pass         http://127.0.0.1:3000;
-        proxy_http_version 1.1;
-        proxy_set_header   Upgrade $http_upgrade;
-        proxy_set_header   Connection 'upgrade';
-        proxy_set_header   Host $host;
-        proxy_set_header   X-Real-IP $remote_addr;
-        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
-NGINX
-
-# Enable the site, remove default
-sudo ln -sf /etc/nginx/sites-available/liftlog /etc/nginx/sites-enabled/liftlog
-sudo rm -f /etc/nginx/sites-enabled/default
-
-sudo nginx -t
-sudo systemctl enable nginx
-sudo systemctl restart nginx
-info "nginx configured as reverse proxy → port 3000"
-
-# ── 5. Done ──────────────────────────────────────────────────────────────────
 section "install.sh complete"
-info "System is ready. Run configure.sh next to set up the app."
+info "System is ready. Clone your repo and run: sudo docker compose up --build -d"
